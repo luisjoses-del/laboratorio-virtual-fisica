@@ -110,13 +110,24 @@ if(current==='circular'){
   const carAngle=(ang+Math.PI/2)*180/Math.PI;
   s+=`<circle cx="${cx}" cy="${cy}" r="${R+33}" fill="#e0e8e4" stroke="#7a9185" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${R-28}" fill="#f8fbfa" stroke="#7a9185" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="5" fill="#173f32"/>`;
   s+=showDcl?`<circle cx="${px}" cy="${py}" r="7" fill="#173f32"/>`:`<g transform="translate(${px} ${py}) rotate(${carAngle})"><rect x="-22" y="-12" width="44" height="24" rx="6" fill="${r.ok?'#58b08a':'#d88787'}" stroke="#235b46" stroke-width="2"/></g>`;
-  if(showVectors){
+  // Vista superior: atrito radial acompanha o carro somente na situacao fisica.
+  // No modo DCL, as tres forcas reais aparecem juntas em um quadro auxiliar.
+  if(showVectors && !showDcl){
     const ux=-Math.cos(ang),uy=-Math.sin(ang),len=66;
-    s+=arrow(px,py,px+ux*len,py+uy*len,'#18875b','',0,0);const sideX=-uy,sideY=ux;s+=`<text x="${px+ux*40+sideX*18}" y="${py+uy*40+sideY*18-3}" font-size="16" font-weight="700" fill="#18875b">fₑ</text>`;
-    // Em vista superior, N e P são perpendiculares à tela; a vista lateral
-    // é apenas um DCL auxiliar, não representa vetores presos à pista.
-    s+=`<rect x="425" y="75" width="150" height="169" rx="8" fill="#f3f8f5" stroke="#b8cec1"/><text x="500" y="95" font-size="13" text-anchor="middle" fill="#355b4b">DCL · vista lateral</text><path d="M447 197 H553" stroke="#8da79a" stroke-width="2"/><circle cx="500" cy="160" r="5" fill="#173f32"/>`;
-    s+=arrow(500,160,500,113,'#2576b3','N',9,-3)+arrow(500,160,500,213,'#b94b54','P',9,7);
+    s+=arrow(px,py,px+ux*len,py+uy*len,'#18875b','',0,0);
+    const sideX=-uy,sideY=ux;
+    s+=`<text x="${px+ux*40+sideX*18}" y="${py+uy*40+sideY*18-3}" font-size="16" font-weight="700" fill="#18875b">fₑ</text>`;
+  }
+  if(showDcl){
+    // DCL completo em perspectiva lateral/radial: N para cima, P para baixo,
+    // atrito estatico horizontal para o centro da curva (esquerda no esquema).
+    s+=`<rect x="408" y="70" width="174" height="184" rx="8" fill="#f3f8f5" stroke="#b8cec1"/><text x="495" y="91" font-size="13" text-anchor="middle" fill="#355b4b">DCL · vista lateral/radial</text><path d="M430 196 H560" stroke="#8da79a" stroke-width="2"/><circle cx="510" cy="158" r="5" fill="#173f32"/>`;
+    if(showVectors){
+      s+=arrow(510,158,510,111,'#2576b3','N',9,-3);
+      s+=arrow(510,158,510,218,'#b94b54','P',9,7);
+      s+=arrow(510,158,442,158,'#18875b','fₑ',-3,-10);
+    }
+    s+=`<text x="495" y="240" font-size="11" text-anchor="middle" fill="#527365">Centro da curva ←</text>`;
   }
   s+=`<text x="18" y="29" fill="#405e52" font-size="14">${r.ok?'Curva sem derrapagem':'Aderência insuficiente'} · vista superior circular</text>`;
 }
